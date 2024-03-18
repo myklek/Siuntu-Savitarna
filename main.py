@@ -1,24 +1,20 @@
-import cv2
+from weight_service import weight_queue
+# import queue
 
-print("Start!")
-
-webcam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-webcam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-webcam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-webcam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M', 'J', 'P', 'G'))
-
-if webcam.isOpened():
-    print("Video is opened!")
-
-while True:
-    ret, frame = webcam.read()
-    cv2.imshow('Webcam stream', frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+#
+# def get_current_weight():
+#     try:
+#         return weight_queue.get(block=False)  # Get weight without blocking
+#     except queue.Empty:
+#         return None
 
 
-cv2.waitKey(0)
-webcam.release()
-cv2.destroyAllWindows()
+def main():
+    print("Hello World!")
+#     wait for user to type weight wit and then print weight value
 
-print("Happy End!")
+
+
+if __name__ == "__main__":
+    main()
+
