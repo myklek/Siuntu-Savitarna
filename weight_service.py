@@ -12,5 +12,5 @@ class WeightService:
     def get_weight(self):
         raw_bytes = self.hx.getRawBytes()
         weight_value = self.hx.rawBytesToWeight(raw_bytes)
-        weight_value = -round(weight_value, 1)
+        weight_value = abs(round(weight_value, 0))
         return weight_value
