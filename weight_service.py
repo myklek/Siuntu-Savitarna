@@ -23,19 +23,20 @@ class WeightService:
         weight_value = abs(round(weight_value, 0))
         return weight_value
 
-    def get_stable_weight(self):
+    def get_stable_weight(self, stop_event):
         prev_weight = None
         equal_readings = 0
-        while True:
+        while not stop_event.is_set():
             sleep(0.2)
             current_weight = self.get_weight()
-            yield current_weight  # yield the current weight reading
             if (prev_weight is not None
                     and abs(prev_weight - current_weight) < WEIGHT_CHANGE_THRESHOLD
                     and current_weight > MINIMUM_WEIGHT):
                 equal_readings += 1
                 if equal_readings == STABLE_READINGS_REQUIRED:
-                    break
+                    yield {"weight": current_weight, "stable": True}  # yield the stable weight
+                    equal_readings = 0  # reset the counter
             else:
-                equal_readings = 0
+                equal_readings = 0  # reset the counter if the weight has changed
+                yield {"weight": current_weight, "stable": False}  # yield the current weight
             prev_weight = current_weight
