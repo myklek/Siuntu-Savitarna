@@ -1,5 +1,9 @@
 import cv2
 import numpy as np
+import base64
+
+
+
 
 
 def detect_objects(frame, aruco_corners):
@@ -44,11 +48,52 @@ def detect_objects(frame, aruco_corners):
     if most_centered_contour is not None:
         most_centered_contour = cv2.approxPolyDP(most_centered_contour,
                                                  0.03 * cv2.arcLength(most_centered_contour, True), True)
-        return [most_centered_contour]
-    else:
-        return []
+
+        x, y, w, h = cv2.boundingRect(most_centered_contour)
+        cropped_mask = mask[y:y + h, x:x + w]
+        # inverse color of mask
+        cropped_mask = cv2.bitwise_not(cropped_mask)
+        # cv2.imshow("cropped", cropped_mask)
+        base64_image = convert_to_base64(compress_image(cropped_mask, 75))
+
+        # print('start')
+        # print(base64_image)
+        # print('obj')
+        # print(most_centered_contour)
+
+        return most_centered_contour, base64_image
 
 
 class HomogeneousBgDetector:
     def __init__(self):
         pass
+
+
+def convert_to_base64(cropped_mask):
+    # Encode the image into jpg format
+    _, encoded_image = cv2.imencode('.jpg', cropped_mask)
+
+    # Convert the encoded image to bytes
+    byte_image = encoded_image.tobytes()
+
+    # Encode the bytes into base64
+    base64_bytes = base64.b64encode(byte_image)
+
+    # Decode the base64 bytes to string
+    base64_string = base64_bytes.decode('utf-8')
+
+    return base64_string
+
+
+def compress_image(image, scale_percent):
+    # calculate the 50 percent of original dimensions
+    width = int(image.shape[1] * scale_percent / 100)
+    height = int(image.shape[0] * scale_percent / 100)
+
+    # dsize
+    dsize = (width, height)
+
+    # resize image
+    output = cv2.resize(image, dsize)
+
+    return output
