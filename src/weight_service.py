@@ -2,7 +2,7 @@ from time import sleep
 
 from hx711v0_5_1 import HX711
 
-WEIGHT_CHANGE_THRESHOLD = 1
+WEIGHT_CHANGE_THRESHOLD = 5
 STABLE_READINGS_REQUIRED = 5
 MINIMUM_WEIGHT = 5
 
@@ -34,9 +34,11 @@ class WeightService:
                     and current_weight > MINIMUM_WEIGHT):
                 equal_readings += 1
                 if equal_readings == STABLE_READINGS_REQUIRED:
-                    yield {"weight": current_weight, "stable": True}  # yield the stable weight
+                    print({"type": "weight", "weight": current_weight, "stable": True})  # yield the stable weight
+                    yield {"type": "weight", "weight": current_weight, "stable": True}  # yield the stable weight
                     equal_readings = 0  # reset the counter
             else:
                 equal_readings = 0  # reset the counter if the weight has changed
-                yield {"weight": current_weight, "stable": False}  # yield the current weight
+                print({"type": "weight", "weight": current_weight, "stable": False})
+                yield {"type": "weight", "weight": current_weight, "stable": False}  # yield the current weight
             prev_weight = current_weight

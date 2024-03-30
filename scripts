@@ -1,2 +1,4 @@
+ uvicorn main:app --reload --host 192.168.1.122
+
 lsof -i :8000
 kill -9 PID
