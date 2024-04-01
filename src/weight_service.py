@@ -9,7 +9,7 @@ MINIMUM_WEIGHT = 5
 
 class WeightService:
     def __init__(self):
-        print("WeightService init")
+        print("WeightService init...    .")
         self.hx = HX711(5, 6)
         self.hx.setReadingFormat("MSB", "MSB")
         self.hx.autosetOffset()
@@ -27,7 +27,7 @@ class WeightService:
         prev_weight = None
         equal_readings = 0
         while not stop_event.is_set():
-            sleep(0.2)
+            # sleep(0.2)
             current_weight = self.get_weight()
             if (prev_weight is not None
                     and abs(prev_weight - current_weight) < WEIGHT_CHANGE_THRESHOLD
