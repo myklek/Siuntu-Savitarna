@@ -9,16 +9,10 @@ STABLE_CHANGE_THRESHOLD = 2
 STABLE_READINGS_REQUIRED = 10
 
 
-class CameraService:
-    def __init__(self):
-        print("CameraService init.....123")
-        self.cam = cv2.VideoCapture(0)
-        # self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-        # self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-        self.cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc(*'MJPG'))
-        # self.cam.set(cv2.CAP_PROP_EXPOSURE, 80)
-        # self.cam.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0)
-
+class MeasuringService:
+    def __init__(self, cam):
+        print("CameraService init")
+        self.cam = cam
         self.parameters = cv2.aruco.DetectorParameters()
         self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_50)
 
@@ -28,7 +22,10 @@ class CameraService:
 
         while not stop_event.is_set():
             # sleep(0.25)
+            if not self.cam.isOpened():
+                self.cam.open(0)
             ret, img = self.cam.read()
+
 
             corners, _, _ = cv2.aruco.detectMarkers(img, self.aruco_dict, parameters=self.parameters)
             if corners:
@@ -47,7 +44,6 @@ class CameraService:
                 object_width = w / pixel_cm_ratio
                 object_height = h / pixel_cm_ratio
 
-                is_stable = False
                 if (last_width is not None and
                         last_height is not None and
                         abs(last_width - object_width) < STABLE_CHANGE_THRESHOLD and
@@ -62,10 +58,10 @@ class CameraService:
                     is_stable = False
                 last_width, last_height = object_width, object_height
                 #
-                print({"type": "dimensions",
-                       "width": round(object_width, 0),
-                       "length": round(object_height, 0),
-                       "stable": is_stable})
+                # print({"type": "dimensions",
+                #        "width": round(object_width, 0),
+                #        "length": round(object_height, 0),
+                #        "stable": is_stable})
                 if stable_count == STABLE_READINGS_REQUIRED:
                     yield {"type": "dimensions",
                            "width": round(object_width, 0),
@@ -78,4 +74,6 @@ class CameraService:
                            "length": round(object_height, 0),
                            "stable": is_stable}
 
-
+    def close(self):
+        if self.cam:
+            self.cam.release()

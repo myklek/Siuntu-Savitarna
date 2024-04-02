@@ -54,7 +54,7 @@ def detect_objects(frame, aruco_corners):
         # inverse color of mask
         cropped_mask = cv2.bitwise_not(cropped_mask)
         # cv2.imshow("cropped", cropped_mask)
-        base64_image = convert_to_base64(compress_image(cropped_mask, 75))
+        base64_image = convert_to_base64(compress_image(cropped_mask, 100))
 
         # print('start')
         # print(base64_image)
