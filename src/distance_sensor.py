@@ -2,13 +2,14 @@ import RPi.GPIO as GPIO
 import time
 
 try:
-    GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BCM)
 
-    PIN_TRIGGER = 7
-    PIN_ECHO = 11
+    PIN_TRIGGER = 4
+    PIN_ECHO = 17
 
     GPIO.setup(PIN_TRIGGER, GPIO.OUT)
     GPIO.setup(PIN_ECHO, GPIO.IN)
+    # GPIO.output(self.PIN_TRIGGER, GPIO.LOW)
 
     GPIO.output(PIN_TRIGGER, GPIO.LOW)
 
@@ -31,10 +32,10 @@ try:
 
         pulse_duration = (pulse_end_time - pulse_start_time)
         distance = round(pulse_duration * 17150, 2)
-        print("Distance:", round( distance,0))
+        print("Distance:", round(distance, 2))
 
         # Add a delay between each measurement
-        time.sleep(0.5)
+        time.sleep(0.3)
 
 finally:
     GPIO.cleanup()

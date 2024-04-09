@@ -5,13 +5,13 @@ import cv2
 import numpy as np
 
 ARCUO_PERIMETER = 13.6
-STABLE_CHANGE_THRESHOLD = 2
+STABLE_CHANGE_THRESHOLD = 3
 STABLE_READINGS_REQUIRED = 10
 
 
 class MeasuringService:
     def __init__(self, cam):
-        print("CameraService init")
+        print("Measuring Service init")
         self.cam = cam
         self.parameters = cv2.aruco.DetectorParameters()
         self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_50)

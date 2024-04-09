@@ -9,7 +9,7 @@ MINIMUM_WEIGHT = 5
 
 class WeightService:
     def __init__(self):
-        print("WeightService init...    .")
+        print("WeightService init")
         self.hx = HX711(5, 6)
         self.hx.setReadingFormat("MSB", "MSB")
         self.hx.autosetOffset()
