@@ -4,7 +4,7 @@ from object_detector import *
 import cv2
 import numpy as np
 
-ARCUO_PERIMETER = 13.6
+ARCUO_PERIMETER = 14.0
 STABLE_CHANGE_THRESHOLD = 3
 STABLE_READINGS_REQUIRED = 10
 
@@ -21,24 +21,23 @@ class MeasuringService:
         stable_count = 0
 
         while not stop_event.is_set():
-            # sleep(0.25)
+            sleep(0.05)
             if not self.cam.isOpened():
                 self.cam.open(0)
             ret, img = self.cam.read()
 
+            cv2.imshow('img', img);
 
             corners, _, _ = cv2.aruco.detectMarkers(img, self.aruco_dict, parameters=self.parameters)
             if corners:
                 aruco_perimeter = cv2.arcLength(corners[0], True)
+                print(aruco_perimeter)
                 pixel_cm_ratio = aruco_perimeter / ARCUO_PERIMETER
 
                 contour, base64_image = detect_objects(img, np.intp(corners))
 
-                # print('cont')
-                # print(contour)
 
                 rect = cv2.minAreaRect(contour)
-                # print(rect)
                 (x, y), (w, h), angle = rect
 
                 object_width = w / pixel_cm_ratio
@@ -58,10 +57,10 @@ class MeasuringService:
                     is_stable = False
                 last_width, last_height = object_width, object_height
                 #
-                # print({"type": "dimensions",
-                #        "width": round(object_width, 0),
-                #        "length": round(object_height, 0),
-                #        "stable": is_stable})
+                print({"type": "dimensions",
+                       "width": round(object_width, 0),
+                       "length": round(object_height, 0),
+                       "stable": is_stable})
                 if stable_count == STABLE_READINGS_REQUIRED:
                     yield {"type": "dimensions",
                            "width": round(object_width, 0),
