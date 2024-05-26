@@ -14,14 +14,13 @@ class QRDetectionService:
 
             if not self.cam.isOpened():
                 self.cam.open(0)
-                # Detect and decode the qrcode
 
             ret, img = self.cam.read()
             data, points, _ = self.qr_code_detector.detectAndDecode(img)
 
             if points is not None:
                 if data:
-                    yield {"type": "qrData", "data": data}  # y
+                    yield {"type": "qrData", "data": data}
 
     def close(self):
         if self.cam:

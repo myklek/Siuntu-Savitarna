@@ -31,7 +31,6 @@ class MeasuringService:
             corners, _, _ = cv2.aruco.detectMarkers(img, self.aruco_dict, parameters=self.parameters)
             if corners:
                 aruco_perimeter = cv2.arcLength(corners[0], True)
-                print(aruco_perimeter)
                 pixel_cm_ratio = aruco_perimeter / ARCUO_PERIMETER
 
                 contour, base64_image = detect_objects(img, np.intp(corners))
@@ -56,11 +55,11 @@ class MeasuringService:
                 else:
                     is_stable = False
                 last_width, last_height = object_width, object_height
-                #
-                print({"type": "dimensions",
-                       "width": round(object_width, 0),
-                       "length": round(object_height, 0),
-                       "stable": is_stable})
+
+                # print({"type": "dimensions",
+                #        "width": round(object_width, 0),
+                #        "length": round(object_height, 0),
+                #        "stable": is_stable})
                 if stable_count == STABLE_READINGS_REQUIRED:
                     yield {"type": "dimensions",
                            "width": round(object_width, 0),

@@ -72,7 +72,7 @@ async def websocket_endpoint(websocket: WebSocket):
             nonlocal weight_thread
             stop_weight_event.set()
             if weight_thread is not None:
-                weight_thread.join()  # Ensure the thread has finished
+                weight_thread.join()
             weight_thread = None
 
         def get_weight():
@@ -86,7 +86,7 @@ async def websocket_endpoint(websocket: WebSocket):
             nonlocal dimensions_thread
             stop_dimensions_event.set()
             if dimensions_thread is not None:
-                dimensions_thread.join()  # Ensure the thread has finished
+                dimensions_thread.join()
             dimensions_thread = None
             measuring_service.close()
 
@@ -124,7 +124,6 @@ async def websocket_endpoint(websocket: WebSocket):
         }
         while True:
             message_data = await websocket.receive_text()
-            print(message_data)
             action = actions.get(message_data)
             if action:
                 action()
@@ -132,6 +131,5 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         await asyncio.create_task(read_messages())
     except WebSocketDisconnect:
-        # Handle the WebSocket disconnect
         if websocket.client_state == WebSocketState.CONNECTED:
             await websocket.close()
