@@ -16,7 +16,7 @@ def detect_objects(frame, aruco_corners):
     aruco_contour = cv2.convexHull(aruco_corners[0])
     contours = [cnt for cnt in contours if not cv2.intersectConvexConvex(cnt, aruco_contour)[0]]
 
-    cv2.imshow("mask", mask)
+    # cv2.imshow("mask", mask)
     image_center = (frame.shape[1] // 2, frame.shape[0] // 2)
 
     min_distance = float('inf')
@@ -47,7 +47,7 @@ def detect_objects(frame, aruco_corners):
         # Nuotraukos negatyvas siuntimui
 
         cropped_mask = cv2.bitwise_not(cropped_mask)
-        cv2.imshow("cropped", cropped_mask)
+        # cv2.imshow("cropped", cropped_mask)
         base64_image = convert_to_base64(compress_image(cropped_mask, 100))
 
         return most_centered_contour, base64_image

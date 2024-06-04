@@ -1,4 +1,5 @@
 from time import sleep
+import datetime
 
 from object_detector import *
 import cv2
@@ -10,6 +11,7 @@ STABLE_READINGS_REQUIRED = 10
 
 
 class MeasuringService:
+
     def __init__(self, cam):
         print("Measuring Service init")
         self.cam = cam
@@ -17,16 +19,18 @@ class MeasuringService:
         self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_5X5_50)
 
     def get_object_dimensions(self, stop_event):
+        read_counter = 0
+
         last_width, last_height = None, None
         stable_count = 0
 
         while not stop_event.is_set():
-            sleep(0.05)
             if not self.cam.isOpened():
                 self.cam.open(0)
+            sleep(0.1)
             ret, img = self.cam.read()
 
-            cv2.imshow('img', img);
+            # cv2.imshow('img', img);
 
             corners, _, _ = cv2.aruco.detectMarkers(img, self.aruco_dict, parameters=self.parameters)
             if corners:
@@ -35,12 +39,14 @@ class MeasuringService:
 
                 contour, base64_image = detect_objects(img, np.intp(corners))
 
-
                 rect = cv2.minAreaRect(contour)
                 (x, y), (w, h), angle = rect
 
                 object_width = w / pixel_cm_ratio
                 object_height = h / pixel_cm_ratio
+
+                if object_width > object_height:
+                    object_width, object_height = object_height, object_width
 
                 if (last_width is not None and
                         last_height is not None and
@@ -56,10 +62,15 @@ class MeasuringService:
                     is_stable = False
                 last_width, last_height = object_width, object_height
 
+                # print current time
+                # print(datetime.datetime.now().time(), ' reads: ', read_counter)
+                read_counter += 1
                 # print({"type": "dimensions",
                 #        "width": round(object_width, 0),
                 #        "length": round(object_height, 0),
                 #        "stable": is_stable})
+
+
                 if stable_count == STABLE_READINGS_REQUIRED:
                     yield {"type": "dimensions",
                            "width": round(object_width, 0),

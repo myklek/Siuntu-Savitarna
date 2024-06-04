@@ -51,8 +51,8 @@ async def websocket_endpoint(websocket: WebSocket):
             asyncio.run(websocket.send_json(distance_data))
 
     async def read_messages():
-        nonlocal weight_thread
-        nonlocal dimensions_thread
+        # nonlocal weight_thread
+        # nonlocal dimensions_thread
 
         def stop_distance_reading():
             nonlocal distance_thread
@@ -124,6 +124,7 @@ async def websocket_endpoint(websocket: WebSocket):
         }
         while True:
             message_data = await websocket.receive_text()
+            print('Message recieved: ' + message_data)
             action = actions.get(message_data)
             if action:
                 action()

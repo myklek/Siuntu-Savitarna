@@ -4,13 +4,13 @@ from threading import Event
 
 DISTANCE_CHANGE_THRESHOLD = 5
 STABLE_READINGS_REQUIRED = 5
-BASE_DISTNACE = 41.3
-AVG_READINGS = 10
+BASE_DISTNACE = 42
+AVG_READINGS = 25
 
 
 class DistanceService:
     def __init__(self):
-        print("HeightService init")
+        print("DistanceService init")
         GPIO.setmode(GPIO.BCM)
         self.PIN_TRIGGER = 4
         self.PIN_ECHO = 17
@@ -38,29 +38,26 @@ class DistanceService:
         return distance
 
     def get_stable_distance(self, stop_event):
-        print('get_stable_distance debug')
         prev_distance = None
         equal_readings = 0
         last_n_distances = []
         while not stop_event.is_set():
-            time.sleep(0.05)
             current_distance = self.get_distance()
+            time.sleep(0.05)
             last_n_distances.append(current_distance)
-            print('last_n_distances', last_n_distances)
-            print(len(last_n_distances) > AVG_READINGS)
             if len(last_n_distances) > AVG_READINGS:
-                last_n_distances.pop(0)
+                last_n_distances.pop(0)  # remove the oldest distance
+
             average_distance = sum(last_n_distances) / len(last_n_distances)
-            print('current distance', current_distance, 'avg: ', average_distance)
             if (prev_distance is not None
                     and abs(prev_distance - average_distance) < DISTANCE_CHANGE_THRESHOLD):
                 equal_readings += 1
                 if equal_readings == STABLE_READINGS_REQUIRED:
-                    yield {"type": "distance", "distance": round(BASE_DISTNACE - average_distance, 1), "stable": True}
+                    yield {"type": "distance", "distance": round(BASE_DISTNACE - average_distance, 0), "stable": True}
                     equal_readings = 0
             else:
                 equal_readings = 0
-                yield {"type": "distance", "distance": round(BASE_DISTNACE - average_distance, 1), "stable": False}
+                yield {"type": "distance", "distance": round(BASE_DISTNACE - average_distance, 0), "stable": False}
             prev_distance = average_distance
 
     def close(self):
