@@ -4,7 +4,7 @@ from threading import Event
 
 DISTANCE_CHANGE_THRESHOLD = 5
 STABLE_READINGS_REQUIRED = 5
-BASE_DISTNACE = 42
+BASE_DISTNACE = 40.7
 AVG_READINGS = 25
 
 
@@ -35,6 +35,7 @@ class DistanceService:
         pulse_duration = (pulse_end_time - pulse_start_time)
         distance = round(pulse_duration * 17150, 2)
 
+
         return distance
 
     def get_stable_distance(self, stop_event):
@@ -43,6 +44,9 @@ class DistanceService:
         last_n_distances = []
         while not stop_event.is_set():
             current_distance = self.get_distance()
+            if current_distance > BASE_DISTNACE:
+                current_distance = BASE_DISTNACE
+
             time.sleep(0.05)
             last_n_distances.append(current_distance)
             if len(last_n_distances) > AVG_READINGS:
